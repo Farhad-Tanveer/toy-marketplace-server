@@ -37,11 +37,43 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/allToys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/allToys/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateToy = req.body;
+      const toy = {
+        $set: {
+          title: updateToy.title,
+          name: updateToy.name,
+          price: updateToy.price,
+          category: updateToy.category,
+          rating: updateToy.rating,
+          image: updateToy.image,
+          quantity: updateToy.quantity,
+          description: updateToy.description,
+        },
+      };
+      const result = await toyCollection.updateOne(filter, toy, options);
+      res.send(result);
+    });
+
     app.post("/addToy", async (req, res) => {
       const body = req.body;
       const result = await toyCollection.insertOne(body);
       res.send(result);
       console.log(body);
+    });
+
+    app.patch("/allToys/:id", async (req, res) => {
+      const updatedToy = req.body;
     });
 
     app.delete("/allToys/:id", async (req, res) => {
