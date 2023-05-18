@@ -33,7 +33,7 @@ async function run() {
     const toyCollection = client.db("toyPlace").collection("allToys");
 
     app.get("/allToys", async (req, res) => {
-      const result = await toyCollection.find({}).toArray();
+      const result = await toyCollection.find({}).limit(20).toArray();
       res.send(result);
     });
 
@@ -42,6 +42,13 @@ async function run() {
       const result = await toyCollection.insertOne(body);
       res.send(result);
       console.log(body);
+    });
+
+    app.delete("/allToys/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.deleteOne(query);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
