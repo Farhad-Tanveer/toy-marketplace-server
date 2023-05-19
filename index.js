@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
 const app = express();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
@@ -32,15 +31,43 @@ async function run() {
 
     const toyCollection = client.db("toyPlace").collection("allToys");
 
+    // get all data
     app.get("/allToys", async (req, res) => {
       const result = await toyCollection.find({}).limit(20).toArray();
       res.send(result);
     });
-
+    // get specific data
     app.get("/allToys/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.get("/allToys", async (req, res) => {
+      console.log(req.query);
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await toyCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/allToy/:email", async (req, res) => {
+      console.log(req.params.email);
+      const filter = { email: req.params.email };
+      const result = await toyCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    app.get("/allToysByCategory/:category", async (req, res) => {
+      //   console.log(req.params.category);
+      const result = await toyCollection
+        .find({
+          category: req.params.category,
+        })
+        .toArray();
       res.send(result);
     });
 
@@ -70,10 +97,6 @@ async function run() {
       const result = await toyCollection.insertOne(body);
       res.send(result);
       console.log(body);
-    });
-
-    app.patch("/allToys/:id", async (req, res) => {
-      const updatedToy = req.body;
     });
 
     app.delete("/allToys/:id", async (req, res) => {
