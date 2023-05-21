@@ -55,7 +55,7 @@ async function run() {
     });
 
     app.get("/allToy/:email", async (req, res) => {
-      console.log(req.params.email);
+      //   console.log(req.params.email);
       const filter = { email: req.params.email };
       const result = await toyCollection.find(filter).toArray();
       res.send(result);
@@ -70,6 +70,25 @@ async function run() {
         .toArray();
       res.send(result);
     });
+
+    // sorting by price
+    // app.get("/sortedtoys", async (req, res) => {
+    //   try {
+    //     if (req.query?.email) {
+    //       const query = { email: req.query.email };
+    //       const sortOrder = req.query?.sort == "asc" ? 1 : -1;
+    //       const result = await toyCollection
+    //         .find({})
+    //         .sort({ price: sortOrder })
+    //         .toArray();
+    //       console.log(result);
+    //       res.send(result);
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send({ error: "Internal Server Error" });
+    //   }
+    // });
 
     app.put("/allToys/:id", async (req, res) => {
       const id = req.params.id;
