@@ -31,6 +31,11 @@ async function run() {
 
     const toyCollection = client.db("toyPlace").collection("allToys");
 
+    // creating index on one fields
+    const indexKeys = { title: 1, category: 1 };
+    const indexOptions = { name: "titleCategory" };
+    const result = await toyCollection.createIndex(indexKeys, indexOptions);
+
     // get all data
     app.get("/allToys", async (req, res) => {
       const result = await toyCollection.find({}).limit(20).toArray();
@@ -58,6 +63,19 @@ async function run() {
       //   console.log(req.params.email);
       const filter = { email: req.params.email };
       const result = await toyCollection.find(filter).toArray();
+      res.send(result);
+    });
+
+    app.get("/getToysByText/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await toyCollection
+        .find({
+          $or: [
+            { title: { $regex: text, $options: "i" } },
+            { category: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
       res.send(result);
     });
 
